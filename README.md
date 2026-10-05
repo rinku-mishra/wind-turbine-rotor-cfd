@@ -6,8 +6,7 @@ wake and the slow-down of the air ahead of the blades.
 
 ![Airflow through the rotating rotor](media/rotor.gif)
 
-*Axial velocity on two cut planes (blue: slowed, light orange: slightly faster) and tip vortices (amber).
-Full video: [media/rotor.mp4](media/rotor.mp4).*
+*Air speed around the spinning rotor. Blue: air slowed by the blades, to about half speed in the wake. Pale orange: air speeding up as it flows around the wake. Amber: tip vortices trailing from each blade. Full video: media/rotor.mp4.*
 
 * Rotor: 3 blades, S826 airfoil, 0.9 m diameter, 10 m/s, tip speed ratio 6
 * Solver: `pimpleFoam`, k-ω SST, sliding mesh (`cyclicAMI`)
