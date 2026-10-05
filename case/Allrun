@@ -40,8 +40,4 @@ else
     runApplication "$app" || exit 1
 fi
 
-# rotor coefficients, upstream induction and a telemetry table
-if command -v python3 >/dev/null 2>&1; then
-    python3 ../post/rotor_performance.py . || echo "post-processing skipped (needs numpy and matplotlib)"
-fi
 #------------------------------------------------------------------------------

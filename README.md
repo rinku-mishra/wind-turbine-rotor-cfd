@@ -16,15 +16,13 @@ Full video: [media/rotor.mp4](media/rotor.mp4).*
 ## Requirements
 
 * OpenFOAM v2306 or newer (openfoam.com)
-* Python 3 with numpy and matplotlib for the load plots; pyvista, pillow and ffmpeg for
-  the animation
+* Python 3 with numpy and scipy only to regenerate the blade geometry (optional)
 
 ## Usage
 
 ```sh
 cd case
-./Allrun -preset coarse -np 8       # mesh, solve, plot loads
-python3 ../post/render_movie.py .   # animation of the last revolution
+./Allrun -preset coarse -np 8       # mesh and solve
 ./Allclean
 ```
 
