@@ -4,7 +4,14 @@ Transient OpenFOAM simulation of a three-bladed model wind-turbine rotor. The ro
 turns through the mesh on a sliding interface (AMI), resolving the tip vortices, the
 wake and the slow-down of the air ahead of the blades.
 
-<!-- Drag rotor.mp4 into this README in the GitHub editor to embed the animation here. -->
+![Airflow through the rotating rotor](media/rotor.gif)
+
+*Axial velocity on two cut planes (blue: slowed, red: faster) and tip vortices (amber).
+Full video: [media/rotor.mp4](media/rotor.mp4).*
+
+* Rotor: 3 blades, S826 airfoil, 0.9 m diameter, 10 m/s, tip speed ratio 6
+* Solver: `pimpleFoam`, k-ω SST, sliding mesh (`cyclicAMI`)
+* Mesh: `blockMesh` + `snappyHexMesh`, presets coarse / medium / fine
 
 ## Requirements
 
@@ -21,8 +28,7 @@ python3 ../post/render_movie.py .   # animation of the last revolution
 ./Allclean
 ```
 
-Wind speed and tip speed ratio are set in `case/system/caseParameters`. Mesh resolution
-is chosen with `-preset coarse`, `medium` or `fine`.
+Wind speed and tip speed ratio are set in `case/system/caseParameters`.
 
 ## Credits
 
