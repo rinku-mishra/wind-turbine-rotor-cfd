@@ -6,7 +6,7 @@ wake and the slow-down of the air ahead of the blades.
 
 ![Airflow through the rotating rotor](media/rotor.gif)
 
-*Axial velocity on two cut planes (blue: slowed, red: faster) and tip vortices (amber).
+*Axial velocity on two cut planes (blue: slowed, light orange: slightly faster) and tip vortices (amber).
 Full video: [media/rotor.mp4](media/rotor.mp4).*
 
 * Rotor: 3 blades, S826 airfoil, 0.9 m diameter, 10 m/s, tip speed ratio 6
