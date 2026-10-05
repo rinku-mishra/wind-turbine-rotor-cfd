@@ -1,0 +1,61 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "caseParameters"
+#include "meshParameters"
+
+application     pimpleFoam;
+
+// fixed time step = a fixed rotor rotation per step (preset: degPerStep)
+stepsPerRev     #eval{ round(360/$degPerStep) };
+deltaT          #eval{ $revPeriod/$stepsPerRev };
+adjustTimeStep  no;
+
+startFrom       latestTime;
+startTime       0;
+stopAt          endTime;
+endTime         #eval{ $nRevs*$revPeriod };
+
+// full fields once per revolution (restart points); animation data comes from
+// the light-weight 'surfaces' function object below
+writeControl    timeStep;
+writeInterval   $stepsPerRev;
+purgeWrite      0;
+writeFormat     binary;
+writePrecision  8;
+writeCompression off;
+timeFormat      general;
+timePrecision   8;
+runTimeModifiable false;
+
+// time windows used by the function objects
+tAvgStart       #eval{ $avgFromRev*$revPeriod };
+tAnimStart      #eval{ ($nRevs - 1)*$revPeriod };
+animEvery       #eval{ max(1, round(4.0/$degPerStep)) };   // one frame per 4 deg
+
+functions
+{
+    #include "functions/rotorLoads"
+    #include "functions/upstreamProbes"
+    #include "functions/fieldAverage"
+    #include "functions/vortexID"
+    #include "functions/animationSurfaces"
+    #include "functions/inductionLines"
+    #include "functions/wallDiagnostics"
+}
+
+// ************************************************************************* //

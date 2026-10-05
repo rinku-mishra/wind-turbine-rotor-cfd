@@ -1,0 +1,22 @@
+# OpenFOAM run output (all regenerable)
+case/[0-9]*/
+!case/0/
+case/.0.keep/
+case/processor*/
+case/postProcessing/
+case/constant/polyMesh/
+case/constant/extendedFeatureEdgeMesh/
+case/constant/cellToRegion
+case/constant/triSurface/*.eMesh
+case/system/meshParameters
+case/log.*
+case/*.foam
+# post-processing scratch
+frames_*/
+case/rotor*.mp4
+case/rotor*_poster.jpg
+geometry/geometry_summary.json
+__pycache__/
+*.pyc
+.DS_Store
+._*

@@ -1,0 +1,25 @@
+{
+  "_comment": "Rotor geometry parameters. Lengths in metres. Blade planform from blade_table.csv. Hub is a simplified spinner (the real nacelle/tower are not modelled).",
+  "n_blades": 3,
+  "tip_radius": 0.45,
+  "pitch_axis_chord": 0.25,
+  "trailing_edge_thickness_chord": 0.005,
+  "root_start_radius": 0.025,
+  "root_cylinder_end_radius": 0.049,
+  "root_cylinder_diameter": 0.0135,
+  "airfoil_start_radius": 0.0675,
+  "n_span_sections": 48,
+  "n_chord_points": 70,
+  "hub": {
+    "radius": 0.045,
+    "nose_x": -0.10,
+    "cyl_start_x": -0.04,
+    "cyl_end_x": 0.09,
+    "tail_x": 0.13
+  },
+  "rotating_zone": {
+    "radius": 0.50,
+    "x_min": -0.14,
+    "x_max": 0.17
+  }
+}

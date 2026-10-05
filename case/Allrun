@@ -1,0 +1,47 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# Model wind-turbine rotor in a wind tunnel, sliding-mesh (AMI) URANS with pimpleFoam.
+#
+#   ./Allrun [-preset coarse|medium|fine] [-np N] [-mesh-only]
+#
+# Examples
+#   ./Allrun                          coarse mesh, serial
+#   ./Allrun -preset medium -np 8     production run on an 8-core workstation
+#
+# Operating point (wind speed, tip speed ratio, ...) lives in system/caseParameters.
+#------------------------------------------------------------------------------
+cd "${0%/*}" || exit
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+
+preset=coarse
+np=1
+meshOnly=false
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -preset)    preset="$2"; shift ;;
+        -np)        np="$2"; shift ;;
+        -mesh-only) meshOnly=true ;;
+        *) echo "unknown option $1"; exit 1 ;;
+    esac
+    shift
+done
+
+./Allrun.pre -preset "$preset" -np "$np" || exit 1
+$meshOnly && exit 0
+
+app=$(getApplication)
+
+if [ "$np" -gt 1 ]; then
+    foamDictionary -entry numberOfSubdomains -set "$np" system/decomposeParDict >/dev/null
+    runApplication decomposePar -force || exit 1
+    runParallel "$app" || exit 1
+    runApplication reconstructPar -latestTime
+else
+    runApplication "$app" || exit 1
+fi
+
+# rotor coefficients, upstream induction and a telemetry table
+if command -v python3 >/dev/null 2>&1; then
+    python3 ../post/rotor_performance.py . || echo "post-processing skipped (needs numpy and matplotlib)"
+fi
+#------------------------------------------------------------------------------

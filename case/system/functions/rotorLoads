@@ -1,0 +1,39 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system/functions";
+    object      rotorLoads;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Integrated pressure + viscous load on rotor (blades + spinner), every step.
+// Thrust = +Fx (downwind). Aerodynamic driving torque = -Mx (rotor axis is -x).
+rotorLoads
+{
+    type            forces;
+    libs            (forces);
+    patches         (blades hub);
+    rho             rhoInf;
+    rhoInf          $rhoRef;
+    CofR            $rotorOrigin;
+    writeControl    timeStep;
+    writeInterval   1;
+    log             true;
+}
+
+bladeLoads
+{
+    $rotorLoads;
+    patches         (blades);
+    log             false;
+}
+// ************************************************************************* //

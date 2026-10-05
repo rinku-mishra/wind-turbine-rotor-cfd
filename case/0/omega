@@ -1,0 +1,34 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      omega;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "$FOAM_CASE/system/caseParameters"
+
+dimensions      [0 0 -1 0 0 0 0];
+internalField   uniform $omegaInlet;
+
+boundaryField
+{
+    #includeEtc "caseDicts/setConstraintTypes"
+
+    inlet       { type fixedValue; value $internalField; }
+    outlet      { type inletOutlet; inletValue $internalField; value $internalField; }
+    tunnelWalls { type zeroGradient; }
+    // blended viscous/log-layer value: valid for any first-cell y+
+    "(blades|hub)" { type omegaWallFunction; blended true; value $internalField; }
+}
+
+// ************************************************************************* //

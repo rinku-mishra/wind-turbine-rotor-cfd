@@ -1,0 +1,30 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system/presets";
+    object      medium;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// MEDIUM: production on a 16 GB workstation (~4-5 M cells, 8 cores, ~1 day)
+preset          medium;
+dx              0.05;
+lBlade          6;      // 0.78 mm
+lHub            5;
+lRotor          2;      // 12.5 mm
+lWake           1;
+nLayers         3;
+addLayers       true;
+degPerStep      1.0;
+nRevs           8;
+avgFromRev      5;
+nOuter          3;

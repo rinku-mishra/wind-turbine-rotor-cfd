@@ -1,0 +1,73 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system/functions";
+    object      animationSurfaces;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Light-weight VTK surfaces for the animation, last revolution, one frame / 4 deg.
+// Output: postProcessing/animationSurfaces/<time>/*.vtp
+animationSurfaces
+{
+    type            surfaces;
+    libs            (sampling);
+    timeStart       $tAnimStart;
+    writeControl    timeStep;
+    writeInterval   $animEvery;
+    surfaceFormat   vtk;
+    formatOptions   { vtk { format binary; legacy false; } }
+    fields          (U p Q);
+    interpolationScheme cellPoint;
+
+    surfaces
+    {
+        midPlane            // vertical plane through the rotor axis
+        {
+            type        cuttingPlane;
+            point       (0 0 0);
+            normal      (0 1 0);
+            interpolate true;
+        }
+        hubPlane            // horizontal plane through the rotor axis
+        {
+            type        cuttingPlane;
+            point       (0 0 0);
+            normal      (0 0 1);
+            interpolate true;
+        }
+        upstreamDisc        // cross-plane one radius upstream
+        {
+            type        cuttingPlane;
+            point       (-0.45 0 0);
+            normal      (1 0 0);
+            interpolate true;
+            bounds      (-1 -0.7 -0.7) (1 0.7 0.7);
+        }
+        vortices            // Q iso-surface: tip and root vortex system
+        {
+            type        isoSurface;
+            isoField    Q;
+            isoValue    1000;       // [1/s2]; Q (R/U)^2 = 2 on this rotor
+            interpolate true;
+            regularise  diagcell;
+            bounds      (-0.3 -0.65 -0.65) (2.2 0.65 0.65);
+        }
+        rotor
+        {
+            type        patch;
+            patches     (blades hub);
+            interpolate false;
+        }
+    }
+}
+// ************************************************************************* //

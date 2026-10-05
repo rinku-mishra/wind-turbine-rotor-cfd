@@ -1,0 +1,33 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "constant";
+    object      dynamicMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Sliding mesh: the cellZone 'rotatingZone' (rotor + spinner) turns as a rigid
+// body; it talks to the stationary tunnel mesh through the cyclicAMI pair AMI1/AMI2.
+#include "$FOAM_CASE/system/caseParameters"
+
+dynamicFvMesh   dynamicMotionSolverFvMesh;
+motionSolverLibs (fvMotionSolvers);
+motionSolver    solidBody;
+
+cellZone        rotatingZone;
+
+solidBodyMotionFunction rotatingMotion;
+origin          $rotorOrigin;
+axis            $rotorAxis;
+omega           $omega;        // rad/s, from caseParameters (tsr * Uinf / R)
+
+// ************************************************************************* //

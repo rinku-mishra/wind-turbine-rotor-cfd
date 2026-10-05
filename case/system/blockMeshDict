@@ -1,0 +1,59 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Wind-tunnel test section around the rotor (rotor centre = origin).
+//   width 2.71 m (y), height 1.81 m (z), hub height 0.817 m above the floor
+//   inlet 2 D upstream (as in the experiment), outlet 6 D downstream (tunnel is longer;
+//   6 D is enough for the rotor loads and the induction zone, not for the far wake)
+
+#include "meshParameters"
+
+xMin   -1.8;   xMax  5.4;
+yMin   -1.355; yMax  1.355;
+zMin   -0.817; zMax  0.993;
+
+nx  #eval{ round(($xMax - $xMin)/$dx) };
+ny  #eval{ round(($yMax - $yMin)/$dx) };
+nz  #eval{ round(($zMax - $zMin)/$dx) };
+
+scale 1;
+
+vertices
+(
+    ($xMin $yMin $zMin) ($xMax $yMin $zMin) ($xMax $yMax $zMin) ($xMin $yMax $zMin)
+    ($xMin $yMin $zMax) ($xMax $yMin $zMax) ($xMax $yMax $zMax) ($xMin $yMax $zMax)
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) ($nx $ny $nz) simpleGrading (1 1 1)
+);
+
+boundary
+(
+    inlet       { type patch; faces ((0 4 7 3)); }
+    outlet      { type patch; faces ((1 2 6 5)); }
+    tunnelWalls
+    {
+        // inviscid walls: the 0.2 m tunnel boundary layers are not resolved.
+        // type 'patch' (not 'wall') so they do not enter the wall distance.
+        type patch;
+        faces ((0 1 5 4) (3 7 6 2) (0 3 2 1) (4 5 6 7));
+    }
+);
+
+// ************************************************************************* //

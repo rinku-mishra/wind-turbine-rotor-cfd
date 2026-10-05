@@ -1,0 +1,37 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system/functions";
+    object      wallDiagnostics;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+yPlus
+{
+    type            yPlus;
+    libs            (fieldFunctionObjects);
+    writeControl    writeTime;
+}
+solverInfo
+{
+    type            solverInfo;
+    libs            (utilityFunctionObjects);
+    fields          (U p);
+    writeResidualFields no;
+}
+courant
+{
+    type            CourantNo;
+    libs            (fieldFunctionObjects);
+    writeControl    writeTime;
+}
+// ************************************************************************* //

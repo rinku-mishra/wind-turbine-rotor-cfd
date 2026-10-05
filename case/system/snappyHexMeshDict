@@ -1,0 +1,168 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include "meshParameters"
+
+castellatedMesh true;
+snap            true;
+addLayers       $addLayers;      // from preset
+
+geometry
+{
+    blades.stl
+    {
+        type    triSurfaceMesh;
+        name    blades;
+        regions { blades { name blades; } }
+    }
+    hub.stl
+    {
+        type    triSurfaceMesh;
+        name    hub;
+        regions { hub { name hub; } }
+    }
+    rotatingZone.stl
+    {
+        type    triSurfaceMesh;
+        name    AMI;
+        regions { AMI { name AMI; } }
+    }
+
+    // refinement volumes (axis = x, rotor at x = 0, R = 0.45 m)
+    nearWake
+    {
+        type    searchableCylinder;
+        point1  (-0.30 0 0);
+        point2  ( 1.35 0 0);     // 3 R downstream: tip-vortex helix
+        radius  0.56;
+    }
+    farWake
+    {
+        type    searchableCylinder;
+        point1  (-0.90 0 0);     // 2 R upstream: induction zone
+        point2  ( 2.70 0 0);     // 3 D downstream
+        radius  0.62;
+    }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       4000000;
+    maxGlobalCells      40000000;
+    minRefinementCells  10;
+    maxLoadUnbalance    0.10;
+    nCellsBetweenLevels 3;
+
+    features
+    (
+        { file "blades.eMesh";       level $lBlade; }
+        { file "hub.eMesh";          level $lHub; }
+        { file "rotatingZone.eMesh"; level $lRotor; }
+    );
+
+    refinementSurfaces
+    {
+        blades
+        {
+            level       ($lBlade $lBlade);
+            patchInfo   { type wall; }
+        }
+        hub
+        {
+            level       ($lHub $lHub);
+            patchInfo   { type wall; }
+        }
+        AMI
+        {
+            // closed cylinder -> cellZone 'rotatingZone' + baffle faces that
+            // createPatch turns into the cyclicAMI pair AMI1/AMI2
+            level           ($lRotor $lRotor);
+            faceType        boundary;
+            faceZone        AMI;
+            cellZone        rotatingZone;
+            cellZoneInside  inside;
+        }
+    }
+
+    resolveFeatureAngle 25;
+
+    refinementRegions
+    {
+        AMI      { mode inside; levels ((1e15 $lRotor)); }
+        nearWake { mode inside; levels ((1e15 $lRotor)); }
+        farWake  { mode inside; levels ((1e15 $lWake)); }
+        blades
+        {
+            // thicken the fine shell around the blades (boundary layer + near wake)
+            mode    distance;
+            levels  ((0.004 $lBlade) (0.015 #eval{$lBlade - 1}) (0.04 #eval{$lBlade - 2}));
+        }
+    }
+
+    locationInMesh (-1.5 0.9 0.6);   // in the tunnel, outside rotor and AMI zone
+    allowFreeStandingZoneFaces false;
+}
+
+snapControls
+{
+    nSmoothPatch            3;
+    tolerance               2.0;
+    nSolveIter              100;
+    nRelaxIter              8;
+    nFeatureSnapIter        15;
+    implicitFeatureSnap     false;
+    explicitFeatureSnap     true;
+    multiRegionFeatureSnap  false;
+}
+
+addLayersControls
+{
+    relativeSizes       true;
+    layers
+    {
+        blades { nSurfaceLayers $nLayers; }
+        hub    { nSurfaceLayers #eval{ $nLayers > 0 ? 2 : 0 }; }
+    }
+    expansionRatio      1.25;
+    finalLayerThickness 0.4;
+    minThickness        0.05;
+    nGrow               0;
+    featureAngle        120;
+    slipFeatureAngle    30;
+    nRelaxIter          5;
+    nSmoothSurfaceNormals 1;
+    nSmoothNormals      3;
+    nSmoothThickness    10;
+    maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3;
+    minMedialAxisAngle  90;
+    nBufferCellsNoExtrude 0;
+    nLayerIter          50;
+}
+
+meshQualityControls
+{
+    #includeEtc "caseDicts/meshQualityDict"
+    maxNonOrtho     65;
+    minTetQuality   1e-15;    // allow the sharp trailing edge cells
+    nSmoothScale    4;
+    errorReduction  0.75;
+}
+
+mergeTolerance 1e-6;
+
+// ************************************************************************* //

@@ -1,0 +1,39 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      caseParameters;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Single source of truth for the operating point. Every other dictionary
+// (0/*, dynamicMeshDict, controlDict, function objects) reads from here.
+
+Uinf            10.0;       // free-stream speed at the inlet [m/s] (reference experiment: 10 m/s)
+R               0.45;       // blade tip radius [m] (geometry/params.json)
+tsr             6.0;        // tip speed ratio  lambda = omega R / Uinf  (design point)
+rhoRef          1.2;        // air density used to turn kinematic p into forces [kg/m3]
+nuAir           1.5e-05;    // kinematic viscosity [m2/s]
+
+// rotor turns counter-clockwise seen from upstream -> rotation vector along -x
+omega           #eval{ $tsr*$Uinf/$R };            // [rad/s]
+rotorAxis       (-1 0 0);
+rotorOrigin     (0 0 0);
+revPeriod       #eval{ 2*pi()/$omega };            // [s] one revolution
+
+// inflow turbulence (empty test section: TI = 0.23 %, L = 0.045 m)
+TI              0.0023;
+Lturb           0.045;
+kInlet          #eval{ 1.5*sqr($TI*$Uinf) };
+omegaInlet      #eval{ sqrt($kInlet)/(pow(0.09,0.25)*$Lturb) };
+
+// ************************************************************************* //

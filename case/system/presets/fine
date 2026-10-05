@@ -1,0 +1,30 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system/presets";
+    object      fine;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// FINE: mesh-convergence check (~12-15 M cells, cluster)
+preset          fine;
+dx              0.04;
+lBlade          7;      // 0.31 mm
+lHub            5;
+lRotor          3;      // 5 mm
+lWake           2;
+nLayers         5;
+addLayers       true;
+degPerStep      0.5;
+nRevs           8;
+avgFromRev      5;
+nOuter          3;

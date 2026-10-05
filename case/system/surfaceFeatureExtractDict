@@ -1,0 +1,39 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      surfaceFeatureExtractDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+blades.stl
+{
+    extractionMethod    extractFromSurface;
+    includedAngle       150;    // keeps trailing edges and tip-cap edges
+    writeObj            no;
+}
+
+hub.stl
+{
+    extractionMethod    extractFromSurface;
+    includedAngle       150;    // keeps trailing edges and tip-cap edges
+    writeObj            no;
+}
+
+rotatingZone.stl
+{
+    extractionMethod    extractFromSurface;
+    includedAngle       150;    // keeps trailing edges and tip-cap edges
+    writeObj            no;
+}
+
+// ************************************************************************* //

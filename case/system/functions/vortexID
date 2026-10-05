@@ -1,0 +1,36 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system/functions";
+    object      vortexID;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// Q-criterion (second invariant of grad U) and vorticity: tip/root vortices
+Q
+{
+    type            Q;
+    libs            (fieldFunctionObjects);
+    field           U;
+    executeControl  timeStep;
+    executeInterval 1;
+    writeControl    writeTime;
+}
+vorticity
+{
+    type            vorticity;
+    libs            (fieldFunctionObjects);
+    executeControl  timeStep;
+    executeInterval 1;
+    writeControl    writeTime;
+}
+// ************************************************************************* //

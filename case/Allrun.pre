@@ -1,0 +1,56 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# Mesh generation for the rotor in the wind-tunnel test section.
+#   ./Allrun.pre [-preset coarse|medium|fine] [-np N]
+#------------------------------------------------------------------------------
+cd "${0%/*}" || exit
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+
+preset=coarse
+np=1
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -preset) preset="$2"; shift ;;
+        -np)     np="$2"; shift ;;
+        *) echo "unknown option $1"; exit 1 ;;
+    esac
+    shift
+done
+
+[ -f "system/presets/$preset" ] || { echo "no preset system/presets/$preset"; exit 1; }
+[ -d 0 ] || { echo "missing 0/ (initial and boundary conditions)"; exit 1; }
+cp -f "system/presets/$preset" system/meshParameters
+echo "preset: $preset   cores: $np"
+
+# surfaces are shipped in constant/triSurface (regenerate: python3 ../geometry/make_geometry.py)
+for s in blades hub rotatingZone; do
+    [ -f "constant/triSurface/$s.stl" ] || { echo "missing constant/triSurface/$s.stl"; exit 1; }
+done
+
+# Keep the initial conditions out of the way while meshing: snappyHexMesh and
+# createPatch would otherwise write mesh-level fields into 0/ or rewrite the files
+# in expanded form. They are put back unchanged at the end (or on any failure).
+rm -rf .0.keep && mv 0 .0.keep
+fail() { rm -rf 0; mv .0.keep 0; exit 1; }
+
+runApplication blockMesh || fail
+runApplication surfaceFeatureExtract || fail
+
+if [ "$np" -gt 1 ]; then
+    foamDictionary -entry numberOfSubdomains -set "$np" system/decomposeParDict >/dev/null
+    runApplication -s mesh decomposePar -force
+    runParallel snappyHexMesh -overwrite || fail
+    runApplication reconstructParMesh -constant || fail
+    rm -rf processor*
+else
+    runApplication snappyHexMesh -overwrite || fail
+fi
+
+# the two sides of the snappy baffle -> cyclicAMI pair AMI1/AMI2
+runApplication createPatch -overwrite || fail
+
+runApplication renumberMesh -overwrite
+runApplication checkMesh -allTopology -allGeometry -constant
+
+rm -rf 0 && mv .0.keep 0     # initial conditions back, untouched
+#------------------------------------------------------------------------------

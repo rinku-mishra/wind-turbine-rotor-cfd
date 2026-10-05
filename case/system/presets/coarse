@@ -1,0 +1,30 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2606                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system/presets";
+    object      coarse;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+// COARSE: pipeline check / first animation (0.64 M cells; loads still drift ~2-5 %/rev at rev 2.4)
+preset          coarse;
+dx              0.07;   // background cell size [m]
+lBlade          5;      // blade surface level  -> dx/2^5 = 2.2 mm
+lHub            4;
+lRotor          2;      // rotating zone + AMI interface + near wake -> 17.5 mm
+lWake           1;      // far-wake cylinder -> 35 mm
+nLayers         0;      // no prism layers (wall functions cover y+ ~ 30-300)
+addLayers       false;
+degPerStep      2.0;    // rotor rotation per time step [deg]
+nRevs           6;      // simulated revolutions
+avgFromRev      4;      // start of time averaging (revolutions)
+nOuter          2;      // PIMPLE outer correctors
